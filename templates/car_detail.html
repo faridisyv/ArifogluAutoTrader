@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 mt-md-4">
+    <div class="row justify-content-center">
+        <!-- Main Car Detail Content -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-start mb-3 car-detail-title-price">
+                <div>
+                    <h1 class="fw-bold mb-1">{{ car.title }}</h1>
+                    <p class="text-muted fs-5 mb-0"><i class="bi bi-geo-alt-fill me-1 text-primary-accent"></i> {{
+                        car.location }}</p>
+                </div>
+                <div class="text-end">
+                    <h2 class="text-primary-accent fw-bold mb-0">${{ "{:,.0f}".format(car.price) }}</h2>
+                    <span class="badge bg-light text-dark border mt-2">{{ t('est_monthly') }}</span>
+                </div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="card border-0 shadow-sm curved-edges overflow-hidden mb-4 p-1 bg-white">
+                {% if car.images %}
+                <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner rounded-4 overflow-hidden">
+                        {% for img in car.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ img.image_url }}" class="d-block w-100 car-detail-hero-img" alt="Car Image">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if car.images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-premium rounded-circle p-3 shadow"
+                            aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-premium rounded-circle p-3 shadow"
+                            aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center rounded-4" style="height: 400px;">
+                    <span class="text-muted"><i class="bi bi-camera fs-1"></i></span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Summary Specs Box -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-3">
+                    <div
+                        class="p-3 bg-light rounded-4 text-center h-100 transition-all hover-scale border border-white shadow-sm">
+                        <i class="bi bi-calendar3 fs-4 text-primary-accent mb-2"></i>
+                        <div class="small text-muted text-uppercase fw-bold">{{ t('year') }}</div>
+                        <div class="fw-bold fs-5">{{ car.year }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div
+                        class="p-3 bg-light rounded-4 text-center h-100 transition-all hover-scale border border-white shadow-sm">
+                        <i class="bi bi-speedometer2 fs-4 text-primary-accent mb-2"></i>
+                        <div class="small text-muted text-uppercase fw-bold">{{ t('mileage') }}</div>
+                        <div class="fw-bold fs-5">{{ "{:,.0f}".format(car.mileage) }} km</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div
+                        class="p-3 bg-light rounded-4 text-center h-100 transition-all hover-scale border border-white shadow-sm">
+                        <i class="bi bi-fuel-pump fs-4 text-primary-accent mb-2"></i>
+                        <div class="small text-muted text-uppercase fw-bold">{{ t('fuel') }}</div>
+                        <div class="fw-bold fs-5">{{ car.fuel_type or 'N/A' }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div
+                        class="p-3 bg-light rounded-4 text-center h-100 transition-all hover-scale border border-white shadow-sm">
+                        <i class="bi bi-gear fs-4 text-primary-accent mb-2"></i>
+                        <div class="small text-muted text-uppercase fw-bold">{{ t('trans') }}</div>
+                        <div class="fw-bold fs-5">{{ car.transmission or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="card border-0 shadow-sm curved-edges mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold border-bottom pb-3 mb-4">{{ t('vehicle_description') }}</h4>
+                    <p class="text-muted lh-lg fs-6" style="white-space: pre-wrap;">{{ car.description }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar (Seller Info & Contact) -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card border-0 shadow-sm curved-edges sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">{{ t('seller_information') }}</h5>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary-accent text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
+                            style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                            {{ car.seller.name[0] }}
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ car.seller.name }}</h5>
+                            <div class="text-muted small"><i class="bi bi-check-circle-fill text-success me-1"></i>
+                                {{ t('verified_seller') }}</div>
+                        </div>
+                    </div>
+
+                    <hr class="opacity-25 my-4">
+
+                    <h6 class="fw-bold mb-3">{{ t('contact_seller') }}</h6>
+
+                    <button
+                        class="btn btn-premium w-100 py-3 mb-3 fw-bold rounded-pill shadow-sm transition-all hover-scale d-flex align-items-center justify-content-center">
+                        <i class="bi bi-telephone-fill me-2"></i> {{ t('show_phone') }}
+                    </button>
+
+                    <a href="mailto:{{ car.seller.email }}?subject=Inquiry about {{ car.title }}"
+                        class="btn btn-outline-premium w-100 py-3 mb-3 fw-bold rounded-pill transition-all d-flex align-items-center justify-content-center">
+                        <i class="bi bi-envelope-fill me-2"></i> {{ t('email_seller') }}
+                    </a>
+
+                    <a href="#"
+                        class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm transition-all hover-scale d-flex align-items-center justify-content-center"
+                        style="background-color: #25D366; border-color: #25D366;">
+                        <i class="bi bi-whatsapp me-2"></i> {{ t('chat_whatsapp') }}
+                    </a>
+
+                    <div class="mt-4 pt-4 border-top text-center text-muted small">
+                        <i class="bi bi-shield-check me-1 fs-5 text-primary-accent align-middle"></i> {{ t('protected_by') }} <span
+                            class="fw-bold text-dark">ARIFOGLU</span> {{ t('buyers_guarantee') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

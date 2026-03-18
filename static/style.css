@@ -1,0 +1,217 @@
+/* 
+   ARIFOGLU CAR - Premium MVP Styles
+   Colors are inspired by deep luxury navy and accent oranges/ambers for action items.
+*/
+
+:root {
+    --color-premium: #0B192C; /* Deep Navy */
+    --color-primary-accent: #FF5A00; /* Vibrant Automotive Orange */
+    --color-primary-hover: #E04D00;
+    --color-light-accent: #1A2E44;
+    --color-bg-light: #F7F9FC;
+    --font-primary: 'Inter', sans-serif;
+    --border-radius-lg: 1rem;
+    --border-radius-xl: 1.5rem;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-bg-light);
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Utility */
+.tracking-wide { letter-spacing: 0.05em; }
+.tracking-tight { letter-spacing: -0.02em; }
+.text-premium { color: var(--color-premium) !important; }
+.bg-premium { background-color: var(--color-premium) !important; }
+.text-primary-accent { color: var(--color-primary-accent) !important; }
+.bg-primary-accent { background-color: var(--color-primary-accent) !important; }
+.bg-light { background-color: #F1F4F8 !important; }
+.text-light-muted { color: #A0B2C6 !important; }
+
+/* Buttons & Elements */
+.btn-primary-accent {
+    background-color: var(--color-primary-accent);
+    border-color: var(--color-primary-accent);
+}
+.btn-primary-accent:hover, .btn-primary-accent:focus {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: #fff;
+}
+.btn-premium {
+    background-color: var(--color-premium);
+    border-color: var(--color-premium);
+    color: white;
+}
+.btn-premium:hover {
+    background-color: var(--color-light-accent);
+    color: white;
+}
+.btn-outline-premium {
+    color: var(--color-premium);
+    border-color: var(--color-premium);
+    background: transparent;
+}
+.btn-outline-premium:hover, .btn-check:checked + .btn-outline-premium {
+    background-color: var(--color-premium);
+    color: white;
+}
+
+.curved-edges { border-radius: var(--border-radius-lg); }
+
+/* Form Elements */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 90, 0, 0.15);
+    border-color: var(--color-primary-accent) !important;
+}
+.search-input-group .form-control:focus {
+    box-shadow: none;
+}
+
+/* Hero Section */
+.hero-section {
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+}
+.hero-gradient {
+    background: linear-gradient(135deg, rgba(11, 25, 44, 0.95) 0%, rgba(26, 46, 68, 0.85) 100%);
+    backdrop-filter: blur(2px);
+}
+
+/* Animations */
+.transition-all {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.hover-scale:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease backwards;
+}
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Car Cards */
+.car-card {
+    border-radius: var(--border-radius-lg) !important;
+}
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+}
+.car-img-container {
+    height: 220px;
+}
+.car-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.car-card:hover .car-img {
+    transform: scale(1.05);
+}
+
+/* Detail Page */
+.car-detail-hero-img {
+    height: 500px;
+    object-fit: cover;
+}
+
+/* Auth Tabs */
+.nav-pills .nav-link.active {
+    background-color: transparent !important;
+    color: var(--color-primary-accent) !important;
+    border-bottom: 3px solid var(--color-primary-accent);
+}
+
+/* Footer Link */
+.footer-link:hover {
+    color: var(--color-primary-accent) !important;
+    padding-left: 5px;
+}
+
+/* --- Mobile / Responsive Overrides --- */
+@media (max-width: 991.98px) {
+    .display-4 { font-size: 2.25rem; }
+    .display-5 { font-size: 1.75rem; }
+    
+    .hero-section {
+        min-height: 400px;
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    /* Navbar Mobile Styles */
+    .navbar-brand img {
+        height: 45px !important;
+    }
+    
+    .nav-item.dropdown {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Floating Card on Map - Fix for Mobile */
+    .info-panel-container {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+    
+    .map-container-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .map-container {
+        height: 300px !important;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Calculator Adjustments */
+    .calculator-results-card {
+        margin-top: 2rem;
+    }
+    
+    /* Car Detail Stacking */
+    .car-detail-title-price {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    .car-detail-title-price .text-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .container {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+    
+    .display-4 { font-size: 1.85rem; }
+}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg curved-edges overflow-hidden">
+                <div class="row g-0">
+
+                    <div class="col-md-12 p-5">
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bold text-premium">{{ t('sell_your_car') }}</h2>
+                            <p class="text-muted">{{ t('browse_premium') }}</p>
+                        </div>
+ 
+                        <form action="{{ url_for('add_car') }}" method="POST">
+                            <h5 class="fw-bold mb-3 text-primary-accent border-bottom pb-2">{{ t('basic_details') }}</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium">{{ t('listing_title') }}</label>
+                                    <input type="text" name="title"
+                                        class="form-control form-control-lg bg-light border-0"
+                                        placeholder="e.g. 2019 Toyota Camry SE" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">{{ t('brand') }}</label>
+                                    <select name="brand" id="brandSelect" class="form-select form-select-lg bg-light border-0" required onchange="updateModels()">
+                                        <option value="" disabled selected>{{ t('select_brand') }}</option>
+                                        <!-- Populated via JS -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">{{ t('model') }}</label>
+                                    <select name="model" id="modelSelect" class="form-select form-select-lg bg-light border-0" required>
+                                        <option value="" disabled selected>{{ t('select_brand_first') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium">{{ t('year') }}</label>
+                                    <input type="number" name="year"
+                                        class="form-control form-control-lg bg-light border-0" placeholder="2019"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium">{{ t('price') }} ($)</label>
+                                    <input type="number" name="price"
+                                        class="form-control form-control-lg bg-light border-0" placeholder="18000"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium">{{ t('mileage') }} (km)</label>
+                                    <input type="number" name="mileage"
+                                        class="form-control form-control-lg bg-light border-0" placeholder="42000"
+                                        required>
+                                </div>
+                            </div>
+ 
+                            <h5 class="fw-bold mb-3 text-primary-accent border-bottom pb-2">{{ t('specifications') }}</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">{{ t('fuel_type') }}</label>
+                                    <select name="fuel_type" class="form-select form-select-lg bg-light border-0">
+                                        <option value="Petrol">Petrol</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Electric">Electric</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">{{ t('transmission') }}</label>
+                                    <select name="transmission" class="form-select form-select-lg bg-light border-0">
+                                        <option value="Automatic">Automatic</option>
+                                        <option value="Manual">Manual</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-medium">{{ t('location') }}</label>
+                                    <input type="text" name="location"
+                                        class="form-control form-control-lg bg-light border-0" placeholder="City, State"
+                                        required>
+                                </div>
+                            </div>
+ 
+                            <h5 class="fw-bold mb-3 text-primary-accent border-bottom pb-2">{{ t('desc_media') }}</h5>
+                            <div class="mb-4">
+                                <label class="form-label fw-medium">{{ t('description') }}</label>
+                                <textarea name="description" rows="5"
+                                    class="form-control form-control-lg bg-light border-0"
+                                    placeholder="Describe your vehicle's condition, features, history, etc..."></textarea>
+                            </div>
+                            <div class="mb-5">
+                                <label class="form-label fw-medium">{{ t('image_urls') }}</label>
+                                <textarea name="images" rows="3" class="form-control form-control-lg bg-light border-0"
+                                    placeholder="https://example.com/car1.jpg, https://example.com/car2.jpg"></textarea>
+                            </div>
+ 
+                            <div class="d-grid">
+                                <button type="submit"
+                                    class="btn btn-primary-accent btn-lg text-white fw-bold rounded-pill py-3">{{ t('publish_listing') }} <i class="bi bi-arrow-right ms-2"></i></button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function initBrands() {
+    const brandSelect = document.getElementById('brandSelect');
+    if (!brandSelect) return;
+    const brands = Object.keys(carModels).sort();
+    brands.forEach(brand => {
+        const opt = document.createElement('option');
+        opt.value = brand;
+        opt.textContent = brand;
+        brandSelect.appendChild(opt);
+    });
+}
+
+function updateModels() {
+    const brandContainer = document.getElementById('brandSelect');
+    if (!brandContainer) return;
+    const brand = brandContainer.value;
+    const modelSelect = document.getElementById('modelSelect');
+    if (!modelSelect) return;
+    modelSelect.innerHTML = '';
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.disabled = true;
+    defaultOpt.selected = true;
+    defaultOpt.textContent = 'Select Model';
+    modelSelect.appendChild(defaultOpt);
+    if (carModels[brand]) {
+        carModels[brand].forEach(function(model) {
+            const opt = document.createElement('option');
+            opt.value = model;
+            opt.textContent = model;
+            modelSelect.appendChild(opt);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initBrands);
+</script>
+{% endblock %}

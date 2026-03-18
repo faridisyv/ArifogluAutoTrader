@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+/* Custom Radio styling for the calculator */
+.custom-radio .check-accent:checked {
+    background-color: var(--color-primary-accent);
+    border-color: var(--color-primary-accent);
+}
+
+.help-tooltip-trigger {
+    cursor: help;
+    border-bottom: 1px dashed rgba(0,0,0,0.2);
+}
+.help-tooltip-trigger i {
+    font-size: 0.8em;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-md-4">
+    
+    <!-- Header -->
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="fw-bold tracking-tight text-premium display-5">{{ t('calc_title') }}</h1>
+        <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">
+            {{ t('calc_subtitle') }}
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-center h-100 align-items-stretch">
+        
+        <!-- Calculator Form column -->
+        <div class="col-lg-7 d-flex fade-in-up delay-1">
+            <div class="card border-0 shadow-lg curved-edges p-4 p-md-5 w-100 flex-fill">
+                <form id="calculatorForm">
+                    <div class="row g-4">
+                        
+                        <!-- Row 1: Vehicle Type & Year -->
+                        <div class="col-md-6">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem;">{{ t('vehicle_type') }}</label>
+                            <select class="form-select border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none" id="vehicleType" required>
+                                <option value="passenger">{{ t('passenger_car') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem;">{{ t('production_date') }}</label>
+                            <input type="date" class="form-control border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none" id="productionYear" required>
+                        </div>
+                        
+                        <!-- Row 2: Engine Type & Volume -->
+                        <div class="col-md-6">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem;">{{ t('engine_type') }}</label>
+                            <select class="form-select border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none" id="engineType" required>
+                                <option value="gasoline">{{ t('gasoline') }}</option>
+                                <option value="diesel">{{ t('diesel') }}</option>
+                                <option value="electric">{{ t('electric') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="volumeContainer">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem;">{{ t('engine_volume') }}</label>
+                            <input type="number" class="form-control border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none" id="engineVolume" min="0" placeholder="2000" required>
+                        </div>
+                        
+                        <!-- Row 3: Costs -->
+                        <div class="col-md-4 d-flex flex-column">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem; min-height: 2.4rem;">{{ t('invoice_value') }}</label>
+                            <input type="number" class="form-control border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none mt-auto" id="invoiceValue" min="0" value="0">
+                        </div>
+                        <div class="col-md-4 d-flex flex-column">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem; min-height: 2.4rem;">{{ t('transport_cost') }}</label>
+                            <input type="number" class="form-control border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none mt-auto" id="transportCost" min="0" value="0">
+                        </div>
+                        <div class="col-md-4 d-flex flex-column">
+                            <label class="form-label text-dark mb-2" style="font-size: 0.95rem; min-height: 2.4rem;">{{ t('other_costs') }}</label>
+                            <input type="number" class="form-control border border-secondary border-opacity-25 rounded-3 py-2 px-3 bg-white shadow-none mt-auto" id="otherCosts" min="0" value="0">
+                        </div>
+                        
+                        <!-- Row 4: Origin -->
+                        <div class="col-12 mt-4">
+                            <label class="form-label text-dark mb-3 d-block" style="font-size: 0.95rem;">{{ t('origin_country') }}</label>
+                            <div class="form-check mb-2 d-flex align-items-center gap-2">
+                                <input class="form-check-input mt-0" style="width: 1.2rem; height: 1.2rem; background-color: #990000; border: none;" type="radio" name="originCountry" id="originOther" value="other" checked>
+                                <label class="form-check-label text-secondary" style="font-size: 0.95rem;" for="originOther">
+                                    {{ t('other_countries') }}
+                                </label>
+                            </div>
+                            <!-- Future expansion: free trade countries -->
+                        </div>
+                        
+                        <div class="col-12 mt-4 d-flex flex-column flex-sm-row gap-3">
+                            <button type="button" id="clearBtn" class="btn btn-outline-danger btn-lg rounded-3 fw-medium py-3 transition-all hover-scale order-2 order-sm-1" style="background-color: transparent; border: 1px solid #dc3545; color: #dc3545;">
+                                {{ t('clear') }}
+                            </button>
+                            <button type="submit" class="btn btn-danger btn-lg rounded-3 fw-medium text-white flex-fill py-3 transition-all hover-scale shadow-sm order-1 order-sm-2" style="background-color: #990000; border: none;">
+                                {{ t('calculate_btn') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Results Column -->
+        <div class="col-lg-5 d-flex fade-in-up delay-2">
+            <div class="card border-0 shadow-sm rounded-4 w-100 flex-fill bg-white calculator-results-card">
+                <div class="card-body p-4 p-md-5 d-flex flex-column h-100">
+                    <h3 class="fw-bold mb-4 text-dark fs-4">
+                        {{ t('results') }}
+                    </h3>
+                    
+                    <div class="flex-grow-1 text-dark fs-6">
+                        <!-- Detailed Breakdown -->
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_import_duty') }}">{{ t('import_duty') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resImportDuty">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_vat') }}">{{ t('vat') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resVat">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary d-inline-block text-truncate pe-3 help-tooltip-trigger" style="max-width: 75%;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_customs_clearance_fee') }}">{{ t('customs_clearance_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resClearance">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_excise_tax') }}">{{ t('excise_tax') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resExciseTax">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary d-inline-block text-truncate pe-3 help-tooltip-trigger" style="max-width: 75%;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_issuing_certificates_fee') }}">{{ t('issuing_certificates_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resIssuingCert">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_electronic_customs_fee') }}">{{ t('electronic_customs_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resElecCustoms">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_vat_electronic') }}">{{ t('vat_electronic') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resVatElec">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_disposal_fee') }}">{{ t('disposal_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resDisposal">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3">
+                            <span class="text-secondary help-tooltip-trigger" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_customs_expertise_fee') }}">{{ t('customs_expertise_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resExpertise">0 AZN</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-3 mb-4">
+                            <span class="text-secondary d-inline-block text-truncate pe-3 help-tooltip-trigger" style="max-width: 75%;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t('desc_certificate_compliance_fee') }}">{{ t('certificate_compliance_fee') }} <i class="bi bi-info-circle ms-1 small opacity-50"></i></span>
+                            <span class="fw-medium text-dark" id="resCompliance">0 AZN</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total -->
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center pt-4 border-top border-dark border-2">
+                            <span class="h6 fw-bold text-dark mb-0">{{ t('total_payments') }}</span>
+                            <span class="h4 fw-bold text-dark mb-0" id="resTotal">0 AZN</span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Bootstrap Tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    const exchangeRateUSDToAZN = 1.70; 
+    
+    // UI Elements
+    const form = document.getElementById('calculatorForm');
+    const engineType = document.getElementById('engineType');
+    const volumeContainer = document.getElementById('volumeContainer');
+    const engineVolume = document.getElementById('engineVolume');
+    const clearBtn = document.getElementById('clearBtn');
+    
+    // Result elements
+    const resImportDuty = document.getElementById('resImportDuty');
+    const resVat = document.getElementById('resVat');
+    const resClearance = document.getElementById('resClearance');
+    const resExciseTax = document.getElementById('resExciseTax');
+    const resIssuingCert = document.getElementById('resIssuingCert');
+    const resElecCustoms = document.getElementById('resElecCustoms');
+    const resVatElec = document.getElementById('resVatElec');
+    const resDisposal = document.getElementById('resDisposal');
+    const resExpertise = document.getElementById('resExpertise');
+    const resCompliance = document.getElementById('resCompliance');
+    const resTotal = document.getElementById('resTotal');
+
+    if (engineType) {
+        engineType.addEventListener('change', (e) => {
+            if(e.target.value === 'electric') {
+                volumeContainer.style.display = 'none';
+                engineVolume.value = 0;
+                engineVolume.removeAttribute('required');
+            } else {
+                volumeContainer.style.display = 'block';
+                engineVolume.setAttribute('required', 'true');
+            }
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            form.reset();
+            volumeContainer.style.display = 'block';
+            resetResults();
+        });
+    }
+
+    function resetResults() {
+        const els = [resImportDuty, resVat, resClearance, resExciseTax, resIssuingCert, resElecCustoms, resVatElec, resDisposal, resExpertise, resCompliance, resTotal];
+        els.forEach(el => {
+            if (el) el.innerText = '0 AZN';
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            calculateCustoms();
+        });
+    }
+
+    function calculateCustoms() {
+        const pYear = parseInt(document.getElementById('productionYear').value);
+        const eType = engineType.value;
+        const eVol = parseInt(engineVolume.value) || 0;
+        const invUSD = parseFloat(document.getElementById('invoiceValue').value) || 0;
+        const transUSD = parseFloat(document.getElementById('transportCost').value) || 0;
+        const otherUSD = parseFloat(document.getElementById('otherCosts').value) || 0;
+
+        const currentYear = new Date().getFullYear();
+        const age = currentYear - pYear;
+        
+        let importDutyAZN = 0;
+        let exciseTaxAZN = 0;
+        let vatAZN = 0;
+        
+        const cifUSD = invUSD + transUSD + otherUSD;
+        let cifAZN = cifUSD * exchangeRateUSDToAZN;
+
+        // FIXED FEES
+        let issuingCertificatesFeeAZN = 30;
+        let electronicCustomsFeeAZN = 30;
+        let vatElectronicAZN = 5.4; 
+        let customsExpertiseFeeAZN = 30;
+        let certComplianceFeeAZN = 30;
+
+        // CLEARANCE FEE
+        let clearanceFeeAZN = 0;
+        if (cifAZN <= 1000) clearanceFeeAZN = 15;
+        else if (cifAZN <= 10000) clearanceFeeAZN = 60;
+        else if (cifAZN <= 100000) clearanceFeeAZN = 120;
+        else if (cifAZN <= 500000) clearanceFeeAZN = 275;
+        else if (cifAZN <= 1000000) clearanceFeeAZN = 600;
+        else clearanceFeeAZN = 1000;
+
+        // DISPOSAL FEE
+        let disposalFeeAZN = 0;
+        if (age >= 1 && age <= 3) disposalFeeAZN = 10;
+        else if (age > 3 && age <= 6) disposalFeeAZN = 400;
+        else if (age >= 7) disposalFeeAZN = 700;
+
+        // CALCULATION LOGIC
+        if (eType === 'electric') {
+            importDutyAZN = 0;
+            exciseTaxAZN = 0;
+            let vatBasisAZN = cifAZN + issuingCertificatesFeeAZN;
+            vatAZN = vatBasisAZN * 0.18;
+            disposalFeeAZN = 0; // Usually exempt
+        } else {
+            // 1. IMPORT DUTY 
+            let dutyUSD = 0;
+            if (eVol <= 1500) {
+                dutyUSD = eVol * 0.70;
+            } else {
+                dutyUSD = eVol * 1.20;
+            }
+            importDutyAZN = dutyUSD * exchangeRateUSDToAZN;
+            
+            // 2. EXCISE TAX 
+            let exciseBaseAZN = 0;
+            if (eVol <= 2000) {
+                exciseBaseAZN = eVol * 0.30;
+            } else if (eVol <= 3000) {
+                exciseBaseAZN = 600 + ((eVol - 2000) * 5.0);
+            } else if (eVol <= 4000) {
+                exciseBaseAZN = 5600 + ((eVol - 3000) * 13.0);
+            } else if (eVol <= 5000) {
+                exciseBaseAZN = 18600 + ((eVol - 4000) * 35.0);
+            } else {
+                exciseBaseAZN = 53600 + ((eVol - 5000) * 70.0);
+            }
+
+            let multiplier = 1.0;
+            if (age >= 7) {
+                if(eType === 'gasoline') multiplier = 1.5;
+                if(eType === 'diesel') multiplier = 2.0;
+            }
+            exciseTaxAZN = exciseBaseAZN * multiplier;
+
+            // 3. VAT 
+            let vatBasisAZN = cifAZN + importDutyAZN + exciseTaxAZN + issuingCertificatesFeeAZN;
+            vatAZN = vatBasisAZN * 0.18;
+        }
+
+        // Total
+        let totalAZN = importDutyAZN + vatAZN + clearanceFeeAZN + exciseTaxAZN + 
+                       issuingCertificatesFeeAZN + electronicCustomsFeeAZN + vatElectronicAZN + 
+                       disposalFeeAZN + customsExpertiseFeeAZN + certComplianceFeeAZN;
+
+        // Apply exactly 1 decimal place if needed, or floor for clean look
+        const fmt = (val) => {
+             // If absolute float matches int, print int, else 1 decimal
+             return (val % 1 !== 0 ? val.toFixed(1) : val) + ' AZN';
+        };
+
+        if (resImportDuty) resImportDuty.innerText = fmt(importDutyAZN);
+        if (resVat) resVat.innerText = fmt(vatAZN);
+        if (resClearance) resClearance.innerText = fmt(clearanceFeeAZN);
+        if (resExciseTax) resExciseTax.innerText = fmt(exciseTaxAZN);
+        if (resIssuingCert) resIssuingCert.innerText = fmt(issuingCertificatesFeeAZN);
+        if (resElecCustoms) resElecCustoms.innerText = fmt(electronicCustomsFeeAZN);
+        if (resVatElec) resVatElec.innerText = fmt(vatElectronicAZN);
+        if (resDisposal) resDisposal.innerText = fmt(disposalFeeAZN);
+        if (resExpertise) resExpertise.innerText = fmt(customsExpertiseFeeAZN);
+        if (resCompliance) resCompliance.innerText = fmt(certComplianceFeeAZN);
+        if (resTotal) resTotal.innerText = fmt(totalAZN);
+    }
+});
+</script>
+{% endblock %}

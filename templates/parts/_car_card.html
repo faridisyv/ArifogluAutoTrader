@@ -1,0 +1,29 @@
+<div class="card h-100 border-0 shadow-sm car-card transition-all hover-up overflow-hidden rounded-4 d-flex flex-column">
+    <div class="position-relative" style="height: 220px; overflow: hidden;">
+        <img src="{{ car.images[0].image_url if car.images else 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&q=80&w=800' }}"
+            class="w-100 h-100" style="object-fit: cover;" alt="{{ car.title }}">
+        <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-start">
+            <span class="badge bg-premium-glass text-white px-3 py-2 rounded-pill shadow-sm">{{ car.year }}</span>
+            <form action="{{ url_for('toggle_favorite', car_id=car.id) }}" method="POST">
+                <button type="submit" class="btn btn-white rounded-circle shadow-sm p-2 d-flex align-items-center justify-content-center transition-all hover-scale favorite-btn" 
+                    style="width: 40px; height: 40px;">
+                    <i class="bi {{ 'bi-heart-fill text-danger' if current_user.is_authenticated and car in current_user.favorite_cars else 'bi-heart text-muted' }} fs-5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="card-body p-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="card-title fw-bold mb-0 text-truncate" style="max-width: 70%;">{{ car.title }}</h5>
+            <span class="fw-bold text-primary-accent fs-5">${{ "{:,.0f}".format(car.price) }}</span>
+        </div>
+        <div class="d-flex gap-2 mb-4">
+            <span class="badge bg-light text-muted border-0 fw-medium px-2 py-1"><i class="bi bi-speedometer2 me-1"></i> {{ car.mileage }} km</span>
+            <span class="badge bg-light text-muted border-0 fw-medium px-2 py-1"><i class="bi bi-fuel-pump me-1"></i> {{ car.fuel_type }}</span>
+        </div>
+        <div class="d-grid">
+            <a href="{{ url_for('car_detail', car_id=car.id) }}"
+                class="btn btn-premium btn-lg rounded-pill fw-bold transition-all">{{ t('view_details') }}</a>
+        </div>
+    </div>
+</div>

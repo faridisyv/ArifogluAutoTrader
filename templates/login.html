@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 mt-md-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+
+            <!-- Auth Card -->
+            <div class="card border-0 shadow-lg curved-edges overflow-hidden">
+                <div class="row g-0">
+
+                    <div class="col-12 p-0">
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-pills nav-justified bg-light mb-0" id="authTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active py-4 fw-bold rounded-0 fs-5 auth-tab" id="login-tab"
+                                    data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab"
+                                    aria-controls="login-pane" aria-selected="true">{{ t('login_tab') }}</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link py-4 fw-bold rounded-0 fs-5 auth-tab text-muted"
+                                    id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button"
+                                    role="tab" aria-controls="register-pane" aria-selected="false">{{ t('register_tab') }}</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content p-4 p-md-5 bg-white" id="authTabsContent">
+
+                            <!-- Login Form -->
+                            <div class="tab-pane fade show active" id="login-pane" role="tabpanel"
+                                aria-labelledby="login-tab">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold">{{ t('welcome_back') }}</h2>
+                                    <p class="text-muted">{{ t('login_subtitle') }}</p>
+                                </div>
+                                <form action="{{ url_for('login') }}" method="POST">
+                                    <input type="hidden" name="action" value="login">
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium text-dark">{{ t('email_label') }}</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="bi bi-envelope text-muted"></i></span>
+                                            <input type="email" name="email" class="form-control border-0 bg-light"
+                                                placeholder="user@example.com" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium text-dark d-flex justify-content-between">
+                                            {{ t('password_label') }}
+                                            <a href="#" class="text-primary-accent text-decoration-none small">{{ t('forgot_password') }}</a>
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="bi bi-lock text-muted"></i></span>
+                                            <input type="password" name="password"
+                                                class="form-control border-0 bg-light" placeholder="••••••••" required>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid mt-5">
+                                        <button type="submit"
+                                            class="btn btn-premium btn-lg fw-bold rounded-pill text-white py-3 transition-all hover-scale">{{ t('sign_in') }}</button>
+                                    </div>
+                                </form>
+
+                                <!-- Google Login -->
+                                <div class="mt-4 text-center">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <hr class="flex-grow-1">
+                                        <span class="px-3 text-muted small fw-medium text-uppercase">{{ t('continue_with_google') }}</span>
+                                        <hr class="flex-grow-1">
+                                    </div>
+                                    <a href="{{ url_for('google_login') }}" class="btn btn-outline-light border shadow-sm w-100 py-3 rounded-pill d-flex align-items-center justify-content-center gap-3 transition-all hover-scale bg-white text-dark fw-medium">
+                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" style="width: 20px;">
+                                        {{ t('sign_in_google') }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Register Form -->
+                            <div class="tab-pane fade" id="register-pane" role="tabpanel"
+                                aria-labelledby="register-tab">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold">{{ t('register_title') }}</h2>
+                                    <p class="text-muted">{{ t('register_subtitle') }}</p>
+                                </div>
+                                <form action="{{ url_for('login') }}" method="POST">
+                                    <input type="hidden" name="action" value="register">
+
+                                    <!-- Role Selection -->
+                                    <div class="mb-4 text-center role-selector">
+                                        <label class="form-label fw-medium d-block mb-3">{{ t('i_want_to') }}</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="role" id="role_buyer"
+                                                value="buyer" autocomplete="off" checked>
+                                            <label class="btn btn-outline-premium py-2 fw-medium" for="role_buyer"><i
+                                                    class="bi bi-cart me-2"></i>{{ t('buy_cars') }}</label>
+
+                                            <input type="radio" class="btn-check" name="role" id="role_seller"
+                                                value="seller" autocomplete="off">
+                                            <label class="btn btn-outline-premium py-2 fw-medium" for="role_seller"><i
+                                                    class="bi bi-cash me-2"></i>{{ t('sell_your_car') }}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-medium text-dark">{{ t('full_name') }}</label>
+                                            <div class="input-group input-group-lg">
+                                                <span class="input-group-text bg-light border-0"><i
+                                                        class="bi bi-person text-muted"></i></span>
+                                                <input type="text" name="name" class="form-control border-0 bg-light"
+                                                    placeholder="John" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mt-3 mt-md-0">
+                                            <label class="form-label fw-medium text-dark">{{ t('surname') }}</label>
+                                            <div class="input-group input-group-lg">
+                                                <span class="input-group-text bg-light border-0"><i
+                                                        class="bi bi-person text-muted"></i></span>
+                                                <input type="text" name="surname" class="form-control border-0 bg-light"
+                                                    placeholder="Doe">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-dark">{{ t('email_label') }}</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="bi bi-envelope text-muted"></i></span>
+                                            <input type="email" name="email" class="form-control border-0 bg-light"
+                                                placeholder="user@example.com" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium text-dark">{{ t('password_label') }}</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="bi bi-lock text-muted"></i></span>
+                                            <input type="password" name="password"
+                                                class="form-control border-0 bg-light"
+                                                placeholder="Minimum 8 characters" required>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid mt-4">
+                                        <button type="submit"
+                                            class="btn btn-primary-accent btn-lg fw-bold rounded-pill text-white py-3 transition-all hover-scale">{{ t('register_btn') }}</button>
+                                    </div>
+                                </form>
+
+                                <!-- Google Register -->
+                                <div class="mt-4 text-center">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <hr class="flex-grow-1">
+                                        <span class="px-3 text-muted small fw-medium text-uppercase">{{ t('continue_with_google') }}</span>
+                                        <hr class="flex-grow-1">
+                                    </div>
+                                    <a href="{{ url_for('google_login') }}" class="btn btn-outline-light border shadow-sm w-100 py-3 rounded-pill d-flex align-items-center justify-content-center gap-3 transition-all hover-scale bg-white text-dark fw-medium">
+                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" style="width: 20px;">
+                                        {{ t('sign_up_google') }}
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Small custom script to change active tab text color -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.auth-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (event) {
+                tabs.forEach(t => t.classList.add('text-muted'));
+                event.target.classList.remove('text-muted');
+            });
+        });
+    });
+</script>
+{% endblock %}

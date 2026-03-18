@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIFOGLU CAR - Premium Car Marketplace</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-premium sticky-top shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/Gemini_Generated_Image_3mxm8u3mxm8u3mxm.jpg') }}"
+                    alt="Arifoglu Auto Logo"
+                    style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen;">
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint == 'index' %}active{% endif %}"
+                            href="{{ url_for('index') }}">{{ t('buy_cars') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint == 'calculator' %}active{% endif %}"
+                            href="{{ url_for('calculator') }}">
+                            <i class="bi bi-calculator me-1"></i> {{ t('customs_calculator') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint == 'contact' %}active{% endif %}"
+                            href="{{ url_for('index') }}#contact">
+                            <i class="bi bi-envelope me-1"></i> {{ t('write_to_us') }}
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe me-1"></i> {{ current_lang }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg curved-edges">
+                            <li><a class="dropdown-item {% if current_lang == 'ENG' %}active{% endif %}"
+                                    href="{{ url_for('set_language', lang='ENG') }}">English (ENG)</a></li>
+                            <li><a class="dropdown-item {% if current_lang == 'KOR' %}active{% endif %}"
+                                    href="{{ url_for('set_language', lang='KOR') }}">한국어 (KOR)</a></li>
+                            <li><a class="dropdown-item {% if current_lang == 'AZE' %}active{% endif %}"
+                                    href="{{ url_for('set_language', lang='AZE') }}">Azərbaycan (AZE)</a></li>
+                        </ul>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'seller' %}
+                    <li class="nav-item">
+                        <a class="btn btn-primary-accent ms-lg-3 px-4 rounded-pill fw-medium text-white transition-all hover-scale"
+                            href="{{ url_for('add_car') }}">{{ t('sell_your_car') }}</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item dropdown ms-lg-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <span
+                                class="user-avatar text-uppercase bg-primary-accent text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 32px; height: 32px; font-weight: 600;">
+                                {{ current_user.name[0] }}
+                            </span>
+                            {{ current_user.name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg curved-edges p-2">
+                            <li><a class="dropdown-item py-2 fw-medium rounded-2" href="{{ url_for('profile') }}"><i
+                                        class="bi bi-person me-2 text-muted"></i> {{ t('profile') }}</a></li>
+                            <li><a class="dropdown-item py-2 fw-medium rounded-2" href="{{ url_for('settings') }}"><i
+                                        class="bi bi-gear me-2 text-muted"></i> {{ t('settings') }}</a></li>
+                            <li>
+                                <hr class="dropdown-divider opacity-10">
+                            </li>
+                            <li><a class="dropdown-item py-2 fw-medium text-danger rounded-2"
+                                    href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> {{
+                                    t('logout') }}</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="btn btn-outline-light px-4 py-2 rounded-pill border fw-medium transition-all"
+                            href="{{ url_for('login') }}">{{ t('login_register') }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Flash Messages -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 curved-edges"
+            role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 pb-5">
+        {% block content %}{% endblock %}
+        <!-- Footer Map Section -->
+        {% if request.endpoint == 'index' %}
+        <section class="py-5 bg-gradient">
+            <div class="container pb-4">
+                <!-- Toggle -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="bg-white rounded-pill p-1 shadow-sm d-inline-flex"
+                        style="border: 1px solid rgba(0,0,0,0.05);">
+                        <button type="button"
+                            class="btn btn-light rounded-pill px-4 py-2 fw-medium text-dark flex-fill map-toggle active"
+                            data-target="korea" id="btnKorea"
+                            style="background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-width: 140px;">
+                            {{ t('south_korea') }}
+                        </button>
+                        <button type="button"
+                            class="btn btn-light rounded-pill px-4 py-2 fw-medium text-secondary flex-fill map-toggle"
+                            data-target="azerbaijan" id="btnAze"
+                            style="background-color: transparent; border: none; min-width: 140px;">
+                            {{ t('azerbaijan') }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Map Container -->
+                <div class="map-container-wrapper">
+                    <div class="position-relative rounded-4 overflow-hidden shadow-lg w-100 map-container"
+                        style="height: 480px; background-color: #1a1a1a;">
+                        <!-- Maps (iFrames or Images) -->
+                        <div id="mapKorea" class="w-100 h-100 position-absolute top-0 start-0 transition-opacity"
+                            style="opacity: 1; z-index: 1;">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3164.712173516584!2d126.651586!3d37.514755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b7890f5cb684b%3A0x6bba3c4bcb41a3d!2s71%20Soseong-ro%2C%20Michuhol-gu%2C%20Incheon%2C%20South%20Korea!5e0!3m2!1sen!2sus!4v1703080000000!5m2!1sen!2sus&output=embed"
+                                width="100%" height="100%" style="border:0; filter: invert(90%) hue-rotate(180deg);"
+                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                        <div id="mapAze" class="w-100 h-100 position-absolute top-0 start-0 transition-opacity"
+                            style="opacity: 0; pointer-events: none; z-index: 1;">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d194473.430032!2d49.690149!3d40.394592!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40307d6bd6211cf9%3A0x343f6b5e7ae56c6b!2sBaku%2C%20Azerbaijan!5e0!3m2!1sen!2sus!4v1703080000000!5m2!1sen!2sus&output=embed"
+                                width="100%" height="100%" style="border:0; filter: invert(90%) hue-rotate(180deg);"
+                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+
+                        <!-- Floating Card Overlay (Desktop) -->
+                        <div class="position-absolute top-50 start-0 translate-middle-y ms-4 ms-md-5 bg-white rounded-3 shadow-sm p-4 info-panel-container h-auto"
+                            style="z-index: 2; width: 90%; max-width: 380px;">
+
+                            <!-- Korea Info -->
+                            <div id="infoKorea" class="info-panel transition-opacity" style="opacity: 1;">
+                                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                                    <span class="fs-1">🇰🇷</span>
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-dark">{{ t('korea_office') }}</h5>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-secondary small mb-1">{{ t('address_label') }}</label>
+                                    <p class="fw-medium text-dark mb-1">{{ t('korea_address') }}</p>
+                                    <a href="https://maps.google.com/?q=Incheon+Michuhol-gu+Soseong-ro+71" target="_blank"
+                                        class="text-danger text-decoration-none small fw-medium d-flex align-items-center gap-1">
+                                        <i class="bi bi-geo-alt"></i> {{ t('show_on_map') }}
+                                    </a>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-secondary small mb-1">{{ t('phone_label') }}</label>
+                                    <p class="fw-medium text-dark mb-0">+82 10 7216 7665</p>
+                                </div>
+
+                                <div>
+                                    <label class="text-secondary small mb-1">{{ t('email_label') }}</label>
+                                    <p class="fw-medium text-dark mb-0">arifoglu.auto@gmail.com</p>
+                                </div>
+                            </div>
+
+                            <!-- Azerbaijan Info -->
+                            <div id="infoAze"
+                                class="info-panel transition-opacity position-absolute top-0 start-0 w-100 h-100 p-4"
+                                style="opacity: 0; pointer-events: none;">
+                                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                                    <span class="fs-1">🇦🇿</span>
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-dark">{{ t('aze_office') }}</h5>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-secondary small mb-1">{{ t('address_label') }}</label>
+                                    <p class="fw-medium text-dark mb-1">{{ t('aze_address') }}</p>
+                                    <a href="https://maps.google.com/?q=Baku+Yasamal" target="_blank"
+                                        class="text-danger text-decoration-none small fw-medium d-flex align-items-center gap-1">
+                                        <i class="bi bi-geo-alt"></i> {{ t('show_on_map') }}
+                                    </a>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="text-secondary small mb-1">{{ t('phone_label') }}</label>
+                                    <p class="fw-medium text-dark mb-0">+994 50 200 11 22</p>
+                                </div>
+
+                                <div>
+                                    <label class="text-secondary small mb-1">{{ t('email_label') }}</label>
+                                    <p class="fw-medium text-dark mb-0">arifoglu.auto@gmail.com</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 mt-auto border-top border-white border-opacity-10">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <img src="{{ url_for('static', filename='images/Gemini_Generated_Image_3mxm8u3mxm8u3mxm.jpg') }}"
+                        alt="Arifoglu Auto Logo" class="mb-3"
+                        style="height: 50px; width: auto; object-fit: contain; mix-blend-mode: screen;">
+                    <p class="text-light-muted opacity-75 pe-md-5">{{ t('footer_desc') }}</p>
+                </div>
+                <div class="col-lg-2 offset-lg-2">
+                    <h5 class="mb-3 fw-semibold">{{ t('explore') }}</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('index') }}"
+                                class="text-light-muted text-decoration-none footer-link transition-all">{{
+                                t('buy_a_car') }}</a>
+                        </li>
+                        <li class="mb-2"><a href="{{ url_for('add_car') }}"
+                                class="text-light-muted text-decoration-none footer-link transition-all">{{
+                                t('sell_a_car') }}</a>
+                        </li>
+                        <li class="mb-2"><a href="#"
+                                class="text-light-muted text-decoration-none footer-link transition-all">{{
+                                t('financing') }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-3 fw-semibold">{{ t('contact_us') }}</h5>
+                    <ul class="list-unstyled text-light-muted opacity-75">
+                        <li class="mb-2"><i class="bi bi-envelope me-2 text-primary-accent"></i> info@arifoglu.car</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2 text-primary-accent"></i> +1 234 567 8900</li>
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary-accent"></i> Premium Showroom, NY
+                            10012</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary mt-5 mb-4 opacity-25">
+            <div class="text-center text-light-muted small opacity-50">
+                &copy;
+                <script>document.write(new Date().getFullYear())</script> Arifoglu Car. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/car-data.js') }}"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
